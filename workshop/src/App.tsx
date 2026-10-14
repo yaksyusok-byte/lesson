@@ -1,66 +1,753 @@
-import {useEffect,useMemo,useRef,useState} from 'react';
-import {BookOpen,Plus,Download,Save,FolderOpen,Copy,ArrowUp,ArrowDown,Trash2,FileJson,Upload,Leaf,X,GripVertical,FileText,Palette,Sparkles,Check,ChevronDown,Layers} from 'lucide-react';
-import {TYPES,projectSchema,demoProject,makeProject,makeBlock,type Project,type Block,type BlockType} from './model';
-import {loadFonts,type Metrics} from './fonts';
-import {buildLayout,type Layout} from './layout';
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  BookOpen,
+  Plus,
+  Download,
+  Save,
+  FolderOpen,
+  Copy,
+  ArrowUp,
+  ArrowDown,
+  Trash2,
+  FileJson,
+  Upload,
+  Leaf,
+  X,
+  GripVertical,
+  FileText,
+  Palette,
+  Sparkles,
+  Check,
+  ChevronDown,
+  Layers,
+} from "lucide-react";
+import {
+  TYPES,
+  projectSchema,
+  demoProject,
+  makeProject,
+  makeBlock,
+  type Project,
+  type Block,
+  type BlockType,
+} from "./model";
+import { loadFonts, type Metrics } from "./fonts";
+import { buildLayout, type Layout } from "./layout";
 
-import {parseProject,listProjects,saveProject,duplicate,download} from './storage';
-import {exerciseService} from './ai';
-import {Preview} from './components/Preview';
-import {NumberInput} from './components/NumberInput';
-import {BlockEditor} from './components/BlockEditor';
-const DRAFT='worksheet-workshop.current.v1';
-function initial(){try{const raw=localStorage.getItem(DRAFT);return {project:raw?parseProject(raw):demoProject(),error:''};}catch{return {project:demoProject(),error:'Не удалось прочитать черновик. Демонстрационный лист открыт; повреждённый черновик пока не изменён.'};}}
-const loaded=initial();
-export default function App(){
- const [project,setProject]=useState<Project>(loaded.project),[selected,setSelected]=useState<string|null>(loaded.project.blocks[0]?.id??null),[metrics,setMetrics]=useState<Metrics|null>(null),[message,setMessage]=useState(loaded.error),[saving,setSaving]=useState(false),[status,setStatus]=useState('Черновик'),[mode,setMode]=useState<'student'|'teacher'>('student'),[addOpen,setAddOpen]=useState(false),[exportOpen,setExportOpen]=useState(false),[dialog,setDialog]=useState<'create'|'library'|null>(null),[tab,setTab]=useState<'empty'|'paste'|'ai'>('empty'),[paste,setPaste]=useState(''),[pasteType,setPasteType]=useState<BlockType>('task'),[library,setLibrary]=useState<Project[]>([]),[lastSaved,setLastSaved]=useState(JSON.stringify(loaded.project)),[dragged,setDragged]=useState<string|null>(null);
- const modalRef=useRef<HTMLElement>(null);const input=useRef<HTMLInputElement>(null),dirty=JSON.stringify(project)!==lastSaved;
- const block=project.blocks.find(b=>b.id===selected);
- useEffect(()=>{loadFonts().then(setMetrics).catch(e=>setMessage(e.message));},[]);
- useEffect(()=>{if(!dirty)return;setStatus('Сохраняем черновик…');const t=setTimeout(()=>{try{localStorage.setItem(DRAFT,JSON.stringify(project));setStatus('Черновик сохранён');}catch{setStatus('Не сохранён');setMessage('Браузер не разрешил сохранение или закончилось место. Экспортируйте проект в JSON.');}},500);return()=>clearTimeout(t);},[project,dirty]);
- useEffect(()=>{if(!dialog)return;const previous=document.activeElement as HTMLElement|null;modalRef.current?.querySelector<HTMLButtonElement>('button')?.focus();const handler=(e:KeyboardEvent)=>{if(e.key==='Escape')setDialog(null);if(e.key==='Tab'){const controls=modalRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input, textarea, select, [tabindex="0"]');if(!controls?.length)return;const first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}};window.addEventListener('keydown',handler);return()=>{window.removeEventListener('keydown',handler);previous?.focus();};},[dialog]);
- useEffect(()=>{const h=(e:BeforeUnloadEvent)=>{if(status==='Не сохранён'){e.preventDefault();}};window.addEventListener('beforeunload',h);return()=>window.removeEventListener('beforeunload',h);},[status]);
- const result=useMemo<{layout:Layout|null;error:string}>(()=>{if(!metrics)return {layout:null,error:''};try{return {layout:buildLayout(project,metrics,mode),error:''};}catch(e){return {layout:null,error:(e as Error).message};}},[project,metrics,mode]);
- function update(v:Partial<Project>){setProject(p=>({...p,...v}));}
- function updateBlock(v:Partial<Block>){setProject(p=>({...p,blocks:p.blocks.map(b=>b.id===selected?{...b,...v}:b)}));}
- function add(type:BlockType,text?:string){if(project.blocks.length>=300){setMessage('Максимум 300 блоков в проекте.');return false;}const b=makeBlock(type);if(text!==undefined)b.text=text;update({blocks:[...project.blocks,b]});setSelected(b.id);setAddOpen(false);return true;}
- function move(id:string,offset:number){const a=[...project.blocks],i=a.findIndex(b=>b.id===id),j=i+offset;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];update({blocks:a});}
- function okDiscard(){return !dirty||window.confirm('Открыть другой лист? Текущий проект не сохранён в списке. Сначала можно отменить и нажать «Сохранить».');}
- function open(p:Project){setProject(p);setSelected(p.blocks[0]?.id??null);setLastSaved(JSON.stringify(p));setDialog(null);setStatus('Проект открыт');try{localStorage.setItem(DRAFT,JSON.stringify(p));}catch{setMessage('Проект открыт, но черновик не удалось сохранить. Скачайте JSON.');}}
- function save(){try{const p=saveProject(project);setProject(p);setLastSaved(JSON.stringify(p));localStorage.setItem(DRAFT,JSON.stringify(p));setStatus('Сохранено в браузере');setMessage('Проект сохранён. Он доступен в разделе «Мои листы».');}catch(e){setMessage('Не удалось сохранить: '+(e as Error).message);}}
- async function pdf(exportMode:'student'|'teacher'){
-  setExportOpen(false);if(!metrics)return;setSaving(true);
-  try{const layout=buildLayout(project,metrics,exportMode);const {exportPdf}=await import('./pdf');const bytes=await exportPdf(layout,metrics,project.title);download(bytes,'application/pdf',(project.name||'Рабочий лист').replace(/[\\/]/g,'-').slice(0,100)+(exportMode==='teacher'?' — с ответами':'')+'.pdf');setMessage('PDF готов: '+layout.pages.length+' стр.');}catch(e){setMessage('Не удалось создать PDF: '+(e as Error).message);}finally{setSaving(false);}
- }
- async function importFile(file:File){try{if(file.size>8000000)throw new Error('Файл слишком большой. Максимум 8 МБ.');const p=parseProject(await file.text());if(!okDiscard())return;open(p);setMessage('Проект импортирован. Текст сохранён без изменений.');}catch(e){setMessage('Не удалось импортировать JSON: '+(e as Error).message);}}
- function jsonExport(){try{projectSchema.parse(project);download(JSON.stringify(project,null,2),'application/json',(project.name||'Проект').slice(0,100)+'.json');}catch(e){setMessage('Не удалось экспортировать JSON: проверьте размеры полей и проекта. '+(e as Error).message);}}
- function showLibrary(){try{setLibrary(listProjects());setDialog('library');}catch(e){setMessage((e as Error).message);}}
- return <div className="app-shell">
-  <header className="app-header"><div className="brand"><div className="brand-mark"><BookOpen size={24}/><Leaf size={13}/></div><div><strong>Мастерская</strong><span>рабочих листов</span></div></div><div className="document-name"><input aria-label="Название проекта" value={project.name} onChange={e=>update({name:e.target.value})}/><span><span className="status-dot"/>{status} · локально</span></div><div className="header-actions"><button className="icon-button" title="Мои листы" aria-label="Мои листы" onClick={showLibrary}><FolderOpen size={19}/></button><button onClick={save}><Save size={17}/><span>Сохранить</span></button><div className="export-wrap"><button className="primary" disabled={!metrics||saving||!!result.error} onClick={()=>setExportOpen(!exportOpen)}><Download size={17}/>{saving?'Готовим PDF…':'Скачать PDF'}<ChevronDown size={15}/></button>{exportOpen&&<div className="dropdown"><button onClick={()=>pdf('student')}>Рабочий лист для ученика</button><button onClick={()=>pdf('teacher')}>Лист с ответами преподавателя</button></div>}</div></div></header>
-  {(message||result.error)&&<div role="alert" className={'notice '+(result.error?'error':'')}><span>{result.error||message}</span><button aria-label="Закрыть уведомление" onClick={()=>setMessage('')}><X size={15}/></button></div>}
-  <main className="workspace"><aside className="structure"><div className="panel-heading"><Layers size={18}/><h2>Структура листа</h2><span className="count">{project.blocks.length}</span></div><div className="structure-scroll">
-   <div className="project-actions"><button onClick={()=>{setTab('empty');setDialog('create');}}><Plus size={16}/> Новый лист</button><button aria-label="Дублировать лист" title="Дублировать лист" onClick={()=>{const p=duplicate(project);open(p);setLastSaved('');setMessage('Создана независимая копия листа.');}}><Copy size={16}/></button></div>
-   <div className="section-caption">ОСНОВНЫЕ НАСТРОЙКИ</div><div className="two-fields"><label>Класс<select value={project.grade} onChange={e=>update({grade:e.target.value as Project['grade']})}>{['5','6','7','8','9'].map(v=><option key={v}>{v}</option>)}</select></label><label>Поля, мм<NumberInput label="Поля страницы" min={10} max={28} value={project.margin} onChange={margin=>update({margin})}/></label></div>
-   <label>Тема<input value={project.topic} onChange={e=>update({topic:e.target.value})}/></label><label>Заголовок<textarea rows={2} value={project.title} onChange={e=>update({title:e.target.value})}/></label><label>Подзаголовок<textarea rows={2} value={project.subtitle} onChange={e=>update({subtitle:e.target.value})}/></label>
-   <div className="section-caption blocks-caption">БЛОКИ <span>выберите для редактирования</span></div><div className="block-list">{project.blocks.map((b,i)=><div draggable onDragStart={()=>setDragged(b.id)} onDragOver={e=>e.preventDefault()} onDrop={()=>{if(!dragged||dragged===b.id)return;const a=[...project.blocks],start=a.findIndex(v=>v.id===dragged),item=a.splice(start,1)[0],target=a.findIndex(v=>v.id===b.id);a.splice(target,0,item);update({blocks:a});setDragged(null);}} key={b.id} className={'block-item '+(selected===b.id?'selected':'')}>
-    <button className="select-block" onClick={()=>setSelected(b.id)} aria-label={`Выбрать блок ${i+1}: ${b.title||TYPES[b.type]}`}><GripVertical size={14} className="grip"/><span className="block-number">{i+1}</span><span><strong>{b.title||TYPES[b.type]}</strong><small>{TYPES[b.type]}</small></span></button>
-    <div className="block-tools"><button aria-label={`Блок ${i+1} вверх`} disabled={i===0} onClick={()=>move(b.id,-1)}><ArrowUp size={12}/></button><button aria-label={`Блок ${i+1} вниз`} disabled={i===project.blocks.length-1} onClick={()=>move(b.id,1)}><ArrowDown size={12}/></button><button aria-label={`Удалить блок ${i+1}`} onClick={()=>{update({blocks:project.blocks.filter(v=>v.id!==b.id)});if(selected===b.id)setSelected(null);}}><Trash2 size={12}/></button></div>
-   </div>)}</div>
-   {!project.blocks.length&&<p className="field-hint">Лист пока пуст. Добавьте первый блок.</p>}
-   <button className="add-block" onClick={()=>setAddOpen(!addOpen)}><Plus size={17}/> Добавить блок</button>{addOpen&&<div className="block-picker">{Object.entries(TYPES).map(([type,title])=><button key={type} onClick={()=>add(type as BlockType)}>{title}</button>)}</div>}
-   <div className="materials-card"><Palette size={21}/><strong>Ваш текст — ваши правила</strong><p>Оформление переносит строки и страницы, но не меняет формулировки.</p><button onClick={()=>{setTab('paste');setDialog('create');}}>Вставить материалы</button></div>
-   <div className="json-tools"><button onClick={jsonExport}><FileJson size={15}/> Экспорт JSON</button><button onClick={()=>input.current?.click()}><Upload size={15}/> Импорт JSON</button></div><input type="file" accept=".json,application/json" hidden ref={input} onChange={e=>{const f=e.target.files?.[0];if(f)void importFile(f);e.target.value='';}}/>
-  </div></aside>
-  <Preview layout={result.layout} selected={selected} onSelect={setSelected} mode={mode} setMode={setMode}/><BlockEditor block={block} onChange={updateBlock}/></main>
-  {dialog&&<div className="modal-backdrop" onClick={()=>setDialog(null)}><section ref={modalRef} className="modal" role="dialog" aria-modal="true" aria-label={dialog==='library'?'Мои листы':'Создание листа'} onClick={e=>e.stopPropagation()}><button className="modal-close" aria-label="Закрыть окно" onClick={()=>setDialog(null)}><X size={19}/></button>
-   {dialog==='library'?<><span className="eyebrow">ЛИЧНАЯ БИБЛИОТЕКА</span><h2>Мои рабочие листы</h2><p className="muted">Хранятся только в этом браузере. Для переноса используйте JSON.</p>{library.length?library.map(p=><button className="library-item" key={p.id} onClick={()=>{if(okDiscard())open(p);}}><FileText size={22}/><span><strong>{p.name||'Без названия'}</strong><small>{p.grade} класс · {p.blocks.length} блоков · {new Date(p.updatedAt).toLocaleDateString('ru-RU')}</small></span><ChevronDown size={16}/></button>):<div className="empty-library"><FolderOpen size={30}/><p>Нажмите «Сохранить», чтобы добавить лист в библиотеку.</p></div>}</>:<><span className="eyebrow">НАЧНИТЕ С ВАШЕЙ ИДЕИ</span><h2>Создание рабочего листа</h2><div className="creation-tabs"><button className={tab==='empty'?'active':''} onClick={()=>setTab('empty')}>С нуля</button><button className={tab==='paste'?'active':''} onClick={()=>setTab('paste')}>Готовый текст</button><button className={tab==='ai'?'active':''} onClick={()=>setTab('ai')}>По теории</button></div>
-    {tab==='empty'?<><div className="creation-illustration"><BookOpen size={52}/><Leaf size={30}/></div><h3>Чистый лист для ваших материалов</h3><p className="muted">Добавляйте карточки, задания, схемы и таблицы. Все формулировки задаёте вы.</p><button className="primary" onClick={()=>{if(okDiscard())open(makeProject());}}><Plus size={17}/> Создать пустой лист</button><button className="text-button" onClick={()=>{if(okDiscard())open(demoProject());}}>Открыть демонстрационный лист</button></>:<>
-     {tab==='ai'&&<div className="ai-note"><Sparkles size={19}/><p><strong>ИИ-сервис не подключён</strong><br/>Генерация упражнений станет доступна после настройки серверного ИИ-сервиса. Сейчас можно сохранить теорию как карточку.</p></div>}
-     <label>{tab==='ai'?'Теоретический материал':'Ваш текст'}<textarea aria-label="Материал для вставки" rows={8} value={paste} onChange={e=>setPaste(e.target.value)} placeholder="Вставьте материал. Программа сохранит его без изменений."/></label>
-     {tab==='paste'&&<label>Добавить в текущий лист как<select value={pasteType} onChange={e=>setPasteType(e.target.value as BlockType)}>{Object.entries(TYPES).filter(([t])=>!['illustration','lines'].includes(t)).map(([t,v])=><option key={t} value={t}>{v}</option>)}</select></label>}
-     <div className="button-row"><button className="primary" disabled={!paste.length} onClick={()=>{if(add(tab==='ai'?'theory':pasteType,paste)){setPaste('');setDialog(null);}}}><Check size={16}/>{tab==='ai'?'Сохранить теорию':'Добавить блок без изменений'}</button>{tab==='ai'&&<button onClick={async()=>{if(!exerciseService){setMessage('Для генерации нужен настроенный серверный ИИ-сервис. Фиктивные задания не создаются.');return;}try{const blocks=await exerciseService.generate({theory:paste,grade:project.grade,topic:project.topic});update({blocks:[...project.blocks,...blocks]});}catch(e){setMessage((e as Error).message);}}}>Сгенерировать задания</button>}</div>
-    </>}
-   </>}
-  </section></div>}
- </div>;
+import {
+  parseProject,
+  listProjects,
+  saveProject,
+  duplicate,
+  download,
+} from "./storage";
+import { exerciseService } from "./ai";
+import { Preview } from "./components/Preview";
+import { NumberInput } from "./components/NumberInput";
+import { BlockEditor } from "./components/BlockEditor";
+const DRAFT = "worksheet-workshop.current.v1";
+function initial() {
+  try {
+    const raw = localStorage.getItem(DRAFT);
+    return { project: raw ? parseProject(raw) : demoProject(), error: "" };
+  } catch {
+    return {
+      project: demoProject(),
+      error:
+        "Не удалось прочитать черновик. Демонстрационный лист открыт; повреждённый черновик пока не изменён.",
+    };
+  }
+}
+const loaded = initial();
+export default function App() {
+  const [project, setProject] = useState<Project>(loaded.project),
+    [selected, setSelected] = useState<string | null>(
+      loaded.project.blocks[0]?.id ?? null,
+    ),
+    [metrics, setMetrics] = useState<Metrics | null>(null),
+    [message, setMessage] = useState(loaded.error),
+    [saving, setSaving] = useState(false),
+    [status, setStatus] = useState("Черновик"),
+    [mode, setMode] = useState<"student" | "teacher">("student"),
+    [addOpen, setAddOpen] = useState(false),
+    [exportOpen, setExportOpen] = useState(false),
+    [dialog, setDialog] = useState<"create" | "library" | null>(null),
+    [tab, setTab] = useState<"empty" | "paste" | "ai">("empty"),
+    [paste, setPaste] = useState(""),
+    [pasteType, setPasteType] = useState<BlockType>("task"),
+    [library, setLibrary] = useState<Project[]>([]),
+    [lastSaved, setLastSaved] = useState(JSON.stringify(loaded.project)),
+    [dragged, setDragged] = useState<string | null>(null);
+  const modalRef = useRef<HTMLElement>(null);
+  const input = useRef<HTMLInputElement>(null),
+    dirty = JSON.stringify(project) !== lastSaved;
+  const block = project.blocks.find((b) => b.id === selected);
+  useEffect(() => {
+    loadFonts()
+      .then(setMetrics)
+      .catch((e) => setMessage(e.message));
+  }, []);
+  useEffect(() => {
+    if (!dirty) return;
+    setStatus("Сохраняем черновик…");
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT, JSON.stringify(project));
+        setStatus("Черновик сохранён");
+      } catch {
+        setStatus("Не сохранён");
+        setMessage(
+          "Браузер не разрешил сохранение или закончилось место. Экспортируйте проект в JSON.",
+        );
+      }
+    }, 500);
+    return () => clearTimeout(t);
+  }, [project, dirty]);
+  useEffect(() => {
+    if (!dialog) return;
+    const previous = document.activeElement as HTMLElement | null;
+    modalRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDialog(null);
+      if (e.key === "Tab") {
+        const controls = modalRef.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), input, textarea, select, [tabindex="0"]',
+        );
+        if (!controls?.length) return;
+        const first = controls[0],
+          last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      previous?.focus();
+    };
+  }, [dialog]);
+  useEffect(() => {
+    const h = (e: BeforeUnloadEvent) => {
+      if (status === "Не сохранён") {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", h);
+    return () => window.removeEventListener("beforeunload", h);
+  }, [status]);
+  const result = useMemo<{ layout: Layout | null; error: string }>(() => {
+    if (!metrics) return { layout: null, error: "" };
+    try {
+      return { layout: buildLayout(project, metrics, mode), error: "" };
+    } catch (e) {
+      return { layout: null, error: (e as Error).message };
+    }
+  }, [project, metrics, mode]);
+  function update(v: Partial<Project>) {
+    setProject((p) => ({ ...p, ...v }));
+  }
+  function updateBlock(v: Partial<Block>) {
+    setProject((p) => ({
+      ...p,
+      blocks: p.blocks.map((b) => (b.id === selected ? { ...b, ...v } : b)),
+    }));
+  }
+  function add(type: BlockType, text?: string) {
+    if (project.blocks.length >= 300) {
+      setMessage("Максимум 300 блоков в проекте.");
+      return false;
+    }
+    const b = makeBlock(type);
+    if (text !== undefined) b.text = text;
+    update({ blocks: [...project.blocks, b] });
+    setSelected(b.id);
+    setAddOpen(false);
+    return true;
+  }
+  function move(id: string, offset: number) {
+    const a = [...project.blocks],
+      i = a.findIndex((b) => b.id === id),
+      j = i + offset;
+    if (j < 0 || j >= a.length) return;
+    [a[i], a[j]] = [a[j], a[i]];
+    update({ blocks: a });
+  }
+  function okDiscard() {
+    return (
+      !dirty ||
+      window.confirm(
+        "Открыть другой лист? Текущий проект не сохранён в списке. Сначала можно отменить и нажать «Сохранить».",
+      )
+    );
+  }
+  function open(p: Project) {
+    setProject(p);
+    setSelected(p.blocks[0]?.id ?? null);
+    setLastSaved(JSON.stringify(p));
+    setDialog(null);
+    setStatus("Проект открыт");
+    try {
+      localStorage.setItem(DRAFT, JSON.stringify(p));
+    } catch {
+      setMessage(
+        "Проект открыт, но черновик не удалось сохранить. Скачайте JSON.",
+      );
+    }
+  }
+  function save() {
+    try {
+      const p = saveProject(project);
+      setProject(p);
+      setLastSaved(JSON.stringify(p));
+      localStorage.setItem(DRAFT, JSON.stringify(p));
+      setStatus("Сохранено в браузере");
+      setMessage("Проект сохранён. Он доступен в разделе «Мои листы».");
+    } catch (e) {
+      setMessage("Не удалось сохранить: " + (e as Error).message);
+    }
+  }
+  async function pdf(exportMode: "student" | "teacher") {
+    setExportOpen(false);
+    if (!metrics) return;
+    setSaving(true);
+    try {
+      const layout = buildLayout(project, metrics, exportMode);
+      const { exportPdf } = await import("./pdf");
+      const bytes = await exportPdf(layout, metrics, project.title);
+      download(
+        bytes,
+        "application/pdf",
+        (project.name || "Рабочий лист").replace(/[\\/]/g, "-").slice(0, 100) +
+          (exportMode === "teacher" ? " — с ответами" : "") +
+          ".pdf",
+      );
+      setMessage("PDF готов: " + layout.pages.length + " стр.");
+    } catch (e) {
+      setMessage("Не удалось создать PDF: " + (e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+  async function importFile(file: File) {
+    try {
+      if (file.size > 8000000)
+        throw new Error("Файл слишком большой. Максимум 8 МБ.");
+      const p = parseProject(await file.text());
+      if (!okDiscard()) return;
+      open(p);
+      setMessage("Проект импортирован. Текст сохранён без изменений.");
+    } catch (e) {
+      setMessage("Не удалось импортировать JSON: " + (e as Error).message);
+    }
+  }
+  function jsonExport() {
+    try {
+      projectSchema.parse(project);
+      download(
+        JSON.stringify(project, null, 2),
+        "application/json",
+        (project.name || "Проект").slice(0, 100) + ".json",
+      );
+    } catch (e) {
+      setMessage(
+        "Не удалось экспортировать JSON: проверьте размеры полей и проекта. " +
+          (e as Error).message,
+      );
+    }
+  }
+  function showLibrary() {
+    try {
+      setLibrary(listProjects());
+      setDialog("library");
+    } catch (e) {
+      setMessage((e as Error).message);
+    }
+  }
+  return (
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="brand">
+          <div className="brand-mark">
+            <BookOpen size={24} />
+            <Leaf size={13} />
+          </div>
+          <div>
+            <strong>Мастерская</strong>
+            <span>рабочих листов</span>
+          </div>
+        </div>
+        <div className="document-name">
+          <input
+            aria-label="Название проекта"
+            value={project.name}
+            onChange={(e) => update({ name: e.target.value })}
+          />
+          <span>
+            <span className="status-dot" />
+            {status} · локально
+          </span>
+        </div>
+        <div className="header-actions">
+          <button
+            className="icon-button"
+            title="Мои листы"
+            aria-label="Мои листы"
+            onClick={showLibrary}
+          >
+            <FolderOpen size={19} />
+          </button>
+          <button onClick={save}>
+            <Save size={17} />
+            <span>Сохранить</span>
+          </button>
+          <div className="export-wrap">
+            <button
+              className="primary"
+              disabled={!metrics || saving || !!result.error}
+              onClick={() => setExportOpen(!exportOpen)}
+            >
+              <Download size={17} />
+              {saving ? "Готовим PDF…" : "Скачать PDF"}
+              <ChevronDown size={15} />
+            </button>
+            {exportOpen && (
+              <div className="dropdown">
+                <button onClick={() => pdf("student")}>
+                  Рабочий лист для ученика
+                </button>
+                <button onClick={() => pdf("teacher")}>
+                  Лист с ответами преподавателя
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+      {(message || result.error) && (
+        <div role="alert" className={"notice " + (result.error ? "error" : "")}>
+          <span>{result.error || message}</span>
+          <button
+            aria-label="Закрыть уведомление"
+            onClick={() => setMessage("")}
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+      <main className="workspace">
+        <aside className="structure">
+          <div className="panel-heading">
+            <Layers size={18} />
+            <h2>Структура листа</h2>
+            <span className="count">{project.blocks.length}</span>
+          </div>
+          <div className="structure-scroll">
+            <div className="project-actions">
+              <button
+                onClick={() => {
+                  setTab("empty");
+                  setDialog("create");
+                }}
+              >
+                <Plus size={16} /> Новый лист
+              </button>
+              <button
+                aria-label="Дублировать лист"
+                title="Дублировать лист"
+                onClick={() => {
+                  const p = duplicate(project);
+                  open(p);
+                  setLastSaved("");
+                  setMessage("Создана независимая копия листа.");
+                }}
+              >
+                <Copy size={16} />
+              </button>
+            </div>
+            <div className="section-caption">ОСНОВНЫЕ НАСТРОЙКИ</div>
+            <div className="two-fields">
+              <label>
+                Класс
+                <select
+                  value={project.grade}
+                  onChange={(e) =>
+                    update({ grade: e.target.value as Project["grade"] })
+                  }
+                >
+                  {["5", "6", "7", "8", "9"].map((v) => (
+                    <option key={v}>{v}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Поля, мм
+                <NumberInput
+                  label="Поля страницы"
+                  min={10}
+                  max={28}
+                  value={project.margin}
+                  onChange={(margin) => update({ margin })}
+                />
+              </label>
+            </div>
+            <label>
+              Тема
+              <input
+                value={project.topic}
+                onChange={(e) => update({ topic: e.target.value })}
+              />
+            </label>
+            <label>
+              Заголовок
+              <textarea
+                rows={2}
+                value={project.title}
+                onChange={(e) => update({ title: e.target.value })}
+              />
+            </label>
+            <label>
+              Подзаголовок
+              <textarea
+                rows={2}
+                value={project.subtitle}
+                onChange={(e) => update({ subtitle: e.target.value })}
+              />
+            </label>
+            <div className="section-caption blocks-caption">
+              БЛОКИ <span>выберите для редактирования</span>
+            </div>
+            <div className="block-list">
+              {project.blocks.map((b, i) => (
+                <div
+                  draggable
+                  onDragStart={() => setDragged(b.id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (!dragged || dragged === b.id) return;
+                    const a = [...project.blocks],
+                      start = a.findIndex((v) => v.id === dragged),
+                      item = a.splice(start, 1)[0],
+                      target = a.findIndex((v) => v.id === b.id);
+                    a.splice(target, 0, item);
+                    update({ blocks: a });
+                    setDragged(null);
+                  }}
+                  key={b.id}
+                  className={
+                    "block-item " + (selected === b.id ? "selected" : "")
+                  }
+                >
+                  <button
+                    className="select-block"
+                    onClick={() => setSelected(b.id)}
+                    aria-label={`Выбрать блок ${i + 1}: ${b.title || TYPES[b.type]}`}
+                  >
+                    <GripVertical size={14} className="grip" />
+                    <span className="block-number">{i + 1}</span>
+                    <span>
+                      <strong>{b.title || TYPES[b.type]}</strong>
+                      <small>{TYPES[b.type]}</small>
+                    </span>
+                  </button>
+                  <div className="block-tools">
+                    <button
+                      aria-label={`Блок ${i + 1} вверх`}
+                      disabled={i === 0}
+                      onClick={() => move(b.id, -1)}
+                    >
+                      <ArrowUp size={12} />
+                    </button>
+                    <button
+                      aria-label={`Блок ${i + 1} вниз`}
+                      disabled={i === project.blocks.length - 1}
+                      onClick={() => move(b.id, 1)}
+                    >
+                      <ArrowDown size={12} />
+                    </button>
+                    <button
+                      aria-label={`Удалить блок ${i + 1}`}
+                      onClick={() => {
+                        update({
+                          blocks: project.blocks.filter((v) => v.id !== b.id),
+                        });
+                        if (selected === b.id) setSelected(null);
+                      }}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {!project.blocks.length && (
+              <p className="field-hint">
+                Лист пока пуст. Добавьте первый блок.
+              </p>
+            )}
+            <button className="add-block" onClick={() => setAddOpen(!addOpen)}>
+              <Plus size={17} /> Добавить блок
+            </button>
+            {addOpen && (
+              <div className="block-picker">
+                {Object.entries(TYPES).map(([type, title]) => (
+                  <button key={type} onClick={() => add(type as BlockType)}>
+                    {title}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="materials-card">
+              <Palette size={21} />
+              <strong>Ваш текст — ваши правила</strong>
+              <p>
+                Оформление переносит строки и страницы, но не меняет
+                формулировки.
+              </p>
+              <button
+                onClick={() => {
+                  setTab("paste");
+                  setDialog("create");
+                }}
+              >
+                Вставить материалы
+              </button>
+            </div>
+            <div className="json-tools">
+              <button onClick={jsonExport}>
+                <FileJson size={15} /> Экспорт JSON
+              </button>
+              <button onClick={() => input.current?.click()}>
+                <Upload size={15} /> Импорт JSON
+              </button>
+            </div>
+            <input
+              type="file"
+              accept=".json,application/json"
+              hidden
+              ref={input}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void importFile(f);
+                e.target.value = "";
+              }}
+            />
+          </div>
+        </aside>
+        <Preview
+          layout={result.layout}
+          selected={selected}
+          onSelect={setSelected}
+          mode={mode}
+          setMode={setMode}
+        />
+        <BlockEditor block={block} onChange={updateBlock} />
+      </main>
+      {dialog && (
+        <div className="modal-backdrop" onClick={() => setDialog(null)}>
+          <section
+            ref={modalRef}
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={dialog === "library" ? "Мои листы" : "Создание листа"}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              aria-label="Закрыть окно"
+              onClick={() => setDialog(null)}
+            >
+              <X size={19} />
+            </button>
+            {dialog === "library" ? (
+              <>
+                <span className="eyebrow">ЛИЧНАЯ БИБЛИОТЕКА</span>
+                <h2>Мои рабочие листы</h2>
+                <p className="muted">
+                  Хранятся только в этом браузере. Для переноса используйте
+                  JSON.
+                </p>
+                {library.length ? (
+                  library.map((p) => (
+                    <button
+                      className="library-item"
+                      key={p.id}
+                      onClick={() => {
+                        if (okDiscard()) open(p);
+                      }}
+                    >
+                      <FileText size={22} />
+                      <span>
+                        <strong>{p.name || "Без названия"}</strong>
+                        <small>
+                          {p.grade} класс · {p.blocks.length} блоков ·{" "}
+                          {new Date(p.updatedAt).toLocaleDateString("ru-RU")}
+                        </small>
+                      </span>
+                      <ChevronDown size={16} />
+                    </button>
+                  ))
+                ) : (
+                  <div className="empty-library">
+                    <FolderOpen size={30} />
+                    <p>
+                      Нажмите «Сохранить», чтобы добавить лист в библиотеку.
+                    </p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="eyebrow">НАЧНИТЕ С ВАШЕЙ ИДЕИ</span>
+                <h2>Создание рабочего листа</h2>
+                <div className="creation-tabs">
+                  <button
+                    className={tab === "empty" ? "active" : ""}
+                    onClick={() => setTab("empty")}
+                  >
+                    С нуля
+                  </button>
+                  <button
+                    className={tab === "paste" ? "active" : ""}
+                    onClick={() => setTab("paste")}
+                  >
+                    Готовый текст
+                  </button>
+                  <button
+                    className={tab === "ai" ? "active" : ""}
+                    onClick={() => setTab("ai")}
+                  >
+                    По теории
+                  </button>
+                </div>
+                {tab === "empty" ? (
+                  <>
+                    <div className="creation-illustration">
+                      <BookOpen size={52} />
+                      <Leaf size={30} />
+                    </div>
+                    <h3>Чистый лист для ваших материалов</h3>
+                    <p className="muted">
+                      Добавляйте карточки, задания, схемы и таблицы. Все
+                      формулировки задаёте вы.
+                    </p>
+                    <button
+                      className="primary"
+                      onClick={() => {
+                        if (okDiscard()) open(makeProject());
+                      }}
+                    >
+                      <Plus size={17} /> Создать пустой лист
+                    </button>
+                    <button
+                      className="text-button"
+                      onClick={() => {
+                        if (okDiscard()) open(demoProject());
+                      }}
+                    >
+                      Открыть демонстрационный лист
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {tab === "ai" && (
+                      <div className="ai-note">
+                        <Sparkles size={19} />
+                        <p>
+                          <strong>ИИ-сервис не подключён</strong>
+                          <br />
+                          Генерация упражнений станет доступна после настройки
+                          серверного ИИ-сервиса. Сейчас можно сохранить теорию
+                          как карточку.
+                        </p>
+                      </div>
+                    )}
+                    <label>
+                      {tab === "ai" ? "Теоретический материал" : "Ваш текст"}
+                      <textarea
+                        aria-label="Материал для вставки"
+                        rows={8}
+                        value={paste}
+                        onChange={(e) => setPaste(e.target.value)}
+                        placeholder="Вставьте материал. Программа сохранит его без изменений."
+                      />
+                    </label>
+                    {tab === "paste" && (
+                      <label>
+                        Добавить в текущий лист как
+                        <select
+                          value={pasteType}
+                          onChange={(e) =>
+                            setPasteType(e.target.value as BlockType)
+                          }
+                        >
+                          {Object.entries(TYPES)
+                            .filter(
+                              ([t]) => !["illustration", "lines"].includes(t),
+                            )
+                            .map(([t, v]) => (
+                              <option key={t} value={t}>
+                                {v}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
+                    )}
+                    <div className="button-row">
+                      <button
+                        className="primary"
+                        disabled={!paste.length}
+                        onClick={() => {
+                          if (add(tab === "ai" ? "theory" : pasteType, paste)) {
+                            setPaste("");
+                            setDialog(null);
+                          }
+                        }}
+                      >
+                        <Check size={16} />
+                        {tab === "ai"
+                          ? "Сохранить теорию"
+                          : "Добавить блок без изменений"}
+                      </button>
+                      {tab === "ai" && (
+                        <button
+                          onClick={async () => {
+                            if (!exerciseService) {
+                              setMessage(
+                                "Для генерации нужен настроенный серверный ИИ-сервис. Фиктивные задания не создаются.",
+                              );
+                              return;
+                            }
+                            try {
+                              const blocks = await exerciseService.generate({
+                                theory: paste,
+                                grade: project.grade,
+                                topic: project.topic,
+                              });
+                              update({
+                                blocks: [...project.blocks, ...blocks],
+                              });
+                            } catch (e) {
+                              setMessage((e as Error).message);
+                            }
+                          }}
+                        >
+                          Сгенерировать задания
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </section>
+        </div>
+      )}
+    </div>
+  );
 }
