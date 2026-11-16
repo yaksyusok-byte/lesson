@@ -88,11 +88,16 @@ body[data-view^=sgs-] main{border-top:4px solid var(--olive)}body[data-view=sgs-
 .mixed-discussion{margin-top:27px;padding-top:23px;border-top:1px solid var(--line)}.mixed-discussion h2{font-size:30px}
 @media(min-width:1101px) and (max-height:850px){.mixed-list{gap:17px}.mixed-list .practice-text{font-size:27px}.mixed-process{font-size:13px;margin-bottom:20px}.mixed-layout-0 .mixed-head{margin-bottom:22px}.mixed-head .practice-instruction{font-size:22px;margin-bottom:15px}}
 @media(max-width:760px){.mixed-list .practice-text{font-size:25px}.mixed-list{gap:23px}.mixed-process{font-size:13px}.mixed-layout-1 .mixed-list{padding-left:13px;border-left-width:4px}}
+
+/* E28545: широкий исходный текст, отдельные варианты, скрытая проверка. */
+.exam-instruction{font:24px/1.32 'Times New Roman',Times,serif;margin-bottom:25px;max-width:1290px}.exam-text{font:28px/1.29 'Times New Roman',Times,serif;max-width:none}.exam-text p{margin:0 0 17px}.exam-basis,.exam-clause{font:inherit;color:inherit;text-decoration:none;background:transparent}.exam-sequence{font:14px/1.4 Lesson,Arial,sans-serif;color:var(--muted);margin-top:22px}.exam-sequence-options{margin:0 0 24px;max-width:1130px}.exam-actions{display:flex;gap:12px;flex-wrap:wrap}.exam-options{padding:0;margin:0;list-style:none;counter-reset:exam}.exam-options li{display:grid;grid-template-columns:36px 1fr;gap:17px;align-items:baseline;margin-bottom:22px;font:31px/1.3 'Times New Roman',Times,serif}.exam-options li:before{counter-increment:exam;content:counter(exam) ')';font:22px Lesson,Arial,sans-serif;color:var(--gold)}.exam-response{display:flex;align-items:baseline;gap:20px;margin:33px 0 17px;font:30px 'Times New Roman',Times,serif}.exam-response input{font:31px 'Times New Roman',Times,serif;border:0;border-bottom:2px solid var(--olive);width:min(600px,75%);background:transparent;color:var(--ink);padding:9px 0}.exam-response input:focus-visible{outline:3px solid var(--gold);outline-offset:5px}.exam-key-list{font:25px/1.4 'Times New Roman',Times,serif;padding-left:28px}.exam-key-list li{margin-bottom:16px}.exam-checked .exam-basis{color:var(--olive);text-decoration:underline double;text-decoration-thickness:1px;text-underline-offset:4px}.exam-checked .exam-clause{border-bottom:2px solid var(--gold)}.exam-checked .exam-options li:nth-child(1)>span,.exam-checked .exam-options li:nth-child(5)>span{color:var(--olive);text-decoration:underline double;text-underline-offset:5px}.reflection-wrap{padding:50px 60px;min-height:575px;border-left:7px solid var(--olive)}.reflection-wrap h1{font-size:80px;margin:26px 0}.reflection-instruction{font:28px/1.4 'Times New Roman',Times,serif}.reflection-phrase{font:48px/1.25 'Times New Roman',Times,serif;margin-top:65px;padding-top:30px;border-top:1px solid var(--gold);max-width:1120px}body[data-view=exam] main{border-top:4px solid var(--gold)}
+@media(min-width:1101px) and (max-height:850px){.exam-head .practice-title{font-size:40px;margin-bottom:13px}.exam-instruction{font-size:21px;margin-bottom:19px}.exam-text{font-size:25px;line-height:1.25}.exam-text p{margin-bottom:13px}.exam-sequence{font-size:13px;margin-top:16px}.exam-options li{font-size:28px;margin-bottom:20px}.reflection-wrap{padding:28px 38px;min-height:470px}.reflection-wrap h1{font-size:65px}.reflection-phrase{font-size:42px;margin-top:45px}}
+@media(max-width:760px){.exam-instruction{font-size:23px}.exam-text{font-size:25px;line-height:1.35}.exam-text p{margin-bottom:24px}.exam-options li{font-size:26px;grid-template-columns:27px 1fr;gap:10px}.exam-actions{width:100%}.exam-actions button{width:100%}.exam-key-list{font-size:23px}.reflection-wrap{padding:15px 0 15px 18px;min-height:450px;border-left-width:4px}.reflection-wrap h1{font-size:51px}.reflection-instruction{font-size:25px}.reflection-phrase{font-size:33px;margin-top:43px}.exam-response{font-size:26px;gap:13px}}
 </style>
 </head>
 <body>
 <div class="shell">
-<header><div class="identity">Русский язык <span>8 класс · Работа в паре</span></div><nav aria-label="Блоки урока"><button id="nav-warm" aria-current="page">1. Разминка <span>0–5 минут</span></button><button id="nav-pgs">2. ПГС <span>5–10 минут</span></button><button id="nav-sgs">3. СГС <span>10 примеров</span></button><button id="nav-sgs-practice">4. Практика <span>20 предложений</span></button><button id="nav-mixed">5. ПГС или СГС? <span>6–8 минут</span></button></nav></header>
+<header><div class="identity">Русский язык <span>8 класс · Работа в паре</span></div><nav aria-label="Блоки урока"><button id="nav-warm" aria-current="page">1. Разминка <span>0–5 минут</span></button><button id="nav-pgs">2. ПГС <span>5–10 минут</span></button><button id="nav-sgs">3. СГС <span>10 примеров</span></button><button id="nav-sgs-practice">4. Практика <span>20 предложений</span></button><button id="nav-mixed">5. ПГС или СГС? <span>6–8 минут</span></button><button id="nav-exam">6. Задание № 2 <span>E28545 · 8–10 минут</span></button><button id="nav-reflection">7. Рефлексия <span>3 минуты</span></button></nav></header>
 <main>
 
 
@@ -117,7 +122,47 @@ body[data-view^=sgs-] main{border-top:4px solid var(--olive)}body[data-view=sgs-
 </div></div><div class="page-foot"><span class="folio">На следующем примере поменяйтесь ролями.</span><button id="to-pgs">← К пятиминутке</button></div>
 </section>
 <section id="sgs-practice" aria-labelledby="practice-title" hidden><div id="practice-content"></div></section>
-<section id="mixed" aria-labelledby="mixed-title" hidden><div id="mixed-content"></div></section></main><footer class="outside-foot"><span>Орфография · ПГС · СГС · Практика к заданию № 2 ОГЭ</span><span>8 класс · Русский язык</span></footer>
+<section id="mixed" aria-labelledby="mixed-title" hidden><div id="mixed-content"></div></section>
+<section id="exam" aria-labelledby="exam-title" hidden>
+<div class="exam-head"><p class="practice-kicker">ОГЭ · вариант E28545 · 8–10 минут</p><h1 class="practice-title" id="exam-title">Задание № 2 ОГЭ</h1><p class="exam-instruction">Укажите варианты ответов, в которых верно определена грамматическая основа в одном из предложений или в одной из частей сложного предложения текста. Запишите номера ответов.</p></div>
+<div id="exam-text-panel">
+<div class="exam-text" id="exam-original-text">
+<p>(1) «Как ныне сбирается вещий Олег отмстить неразумным хозарам…» — так <span class="exam-basis">начинается</span> известная историческая <span class="exam-basis">баллада</span> А. С. Пушкина «Песнь о вещем Олеге».</p>
+<p>(2) Почему же киевский князь Олег называется «вещим»?</p>
+<p>(3) Исходя из современного понимания слов, напрашивается толкование: вещий — это тот, <span class="exam-clause">кто может вещать (говорить), возможно, предвещать (предсказывать)</span>.</p>
+<p>(4) Но корень -вѣщ- в древнерусском языке имеет значение «мудрость».</p>
+<p>(5) Конечно, <span class="exam-basis">А. С. Пушкин мог написать</span>: «Как ныне сбирается мудрый Олег…», но в летописи писали иначе, и у поэта выражение «как ныне» и слово «вещий» создают атмосферу старины.</p>
+</div>
+<p class="exam-sequence">Первый вариант разбираем вместе. Варианты 2–5 — сначала самостоятельно, затем сверка в паре.</p>
+<div class="practice-foot"><div class="exam-actions"><button id="exam-go-options" class="primary">К вариантам ответа →</button><button id="exam-text-check" aria-expanded="false" aria-controls="exam-key">Проверка</button></div><span class="practice-mode">Текст · 1 / 2</span></div>
+</div>
+<div id="exam-options-panel" hidden>
+<p class="exam-sequence exam-sequence-options">Вариант 1 — вместе с преподавателем. Варианты 2–5 — самостоятельно. Запиши номера всех верных ответов, затем сверьтесь в паре.</p>
+<ol class="exam-options" id="exam-options-list">
+<li><span>начинается баллада (предложение 1)</span></li>
+<li><span>называется (предложение 2)</span></li>
+<li><span>тот может (предложение 3)</span></li>
+<li><span>имеет значение (предложение 4)</span></li>
+<li><span>А. С. Пушкин мог написать (предложение 5)</span></li>
+</ol>
+<div class="exam-response"><label for="exam-response">Ответ</label><input id="exam-response" type="text" inputmode="numeric" autocomplete="off" aria-label="Номера верных ответов"></div>
+<div class="practice-foot"><div class="exam-actions"><button id="exam-back-text">← Вернуться к тексту</button><button id="exam-check" aria-expanded="false" aria-controls="exam-key">Проверка</button></div><span class="practice-mode">Варианты · 2 / 2</span></div>
+</div>
+<aside class="practice-key" id="exam-key" hidden>
+<h2>Ключ и заметки преподавателя</h2>
+<p>Ответ по ключу ОБЗ — <strong>15</strong>.</p>
+<ol class="exam-key-list">
+<li>Верно. После цитаты грамматическая основа — «баллада начинается». Подлежащее стоит после сказуемого.</li>
+<li>Неверно. В варианте пропущено подлежащее. Полное сказуемое — «называется „вещим“».</li>
+<li>Неверно. «Тот» и «может» относятся к разным частям предложения. В придаточной части подлежащее — «кто», а со словом «может» связаны инфинитивы «вещать» и «предвещать».</li>
+<li>Неверно. В варианте пропущено подлежащее «корень».</li>
+<li>Верно. «А. С. Пушкин» — подлежащее. «Мог написать» — СГС.</li>
+</ol>
+<p class="key-note">При сверке первый ученик показывает, где в предложении 3 проходит граница перед придаточной частью. Второй объясняет, почему в предложении 5 в сказуемое входят оба слова «мог написать».</p>
+</aside>
+</section>
+<section id="reflection" aria-labelledby="reflection-title" hidden><div class="reflection-wrap"><p class="practice-kicker">Последние 3 минуты урока</p><h1 id="reflection-title">Рефлексия</h1><p class="reflection-instruction">Закончи фразу и прочитай её вслух.</p><p class="reflection-phrase">В следующем задании № 2<br>я буду проверять…</p></div></section>
+</main><footer class="outside-foot"><span>Орфография · ПГС · СГС · Практика к заданию № 2 ОГЭ</span><span>8 класс · Русский язык</span></footer>
 </div>
 <div class="slide-dock" role="navigation" aria-label="Переключение слайдов"><div class="dock-inner"><button id="slide-prev">← Назад</button><div class="slide-position"><span id="slide-number" aria-live="polite"></span><span id="slide-section"></span></div><button id="slide-next" class="primary">Дальше →</button></div></div>
 <aside id="teacher-sheet" hidden><h1>Слова для диктовки</h1><p>Для учителя. Перед демонстрацией переключитесь на вкладку урока.</p><ol id="teacher-words"></ol><button id="close-teacher">Закрыть список</button></aside>
@@ -153,7 +198,7 @@ let activeBlock='warm';
 function switchBlock(block){
  resetAnswers();
  activeBlock=block;
- for(const name of ['warm','pgs','sgs','sgs-practice','mixed']){
+ for(const name of ['warm','pgs','sgs','sgs-practice','mixed','exam','reflection']){
   $(name).hidden=name!==block;
   if(name===block)$('nav-'+name).setAttribute('aria-current','page');
   else $('nav-'+name).removeAttribute('aria-current');
@@ -267,12 +312,12 @@ function renderWarmStage(){
 }
 $('teacher-list').onclick=()=>{const teacherURL=new URL(location.href);teacherURL.hash='teacher-dictation';window.open(teacherURL.href,'_blank','noopener');};
 function updateSlideNav(){
- const number=activeBlock==='warm'?warmStage+1:activeBlock==='pgs'?4:activeBlock==='sgs'?5+current:activeBlock==='sgs-practice'?15+practicePage:20+mixedPage;
- $('slide-number').textContent='Слайд '+number+' / 21';
- const titles={warm:'Орфографическая разминка',pgs:'Пятиминутка по ПГС',sgs:'Составное глагольное сказуемое','sgs-practice':practicePage<2?'Практика · Найди СГС':'Практика · Проверь основу','mixed':'ПГС или СГС? · '+(mixedPage===0?'1–6':'7–12')};
+ const number=activeBlock==='warm'?warmStage+1:activeBlock==='pgs'?4:activeBlock==='sgs'?5+current:activeBlock==='sgs-practice'?15+practicePage:activeBlock==='mixed'?20+mixedPage:activeBlock==='exam'?22+examPage:24;
+ $('slide-number').textContent='Слайд '+number+' / 24';
+ const titles={warm:'Орфографическая разминка',pgs:'Пятиминутка по ПГС',sgs:'Составное глагольное сказуемое','sgs-practice':practicePage<2?'Практика · Найди СГС':'Практика · Проверь основу','mixed':'ПГС или СГС? · '+(mixedPage===0?'1–6':'7–12'),exam:'Задание № 2 ОГЭ · '+(examPage===0?'Текст':'Варианты'),reflection:'Рефлексия · 3 минуты'};
  $('slide-section').textContent=titles[activeBlock];
- $('slide-prev').disabled=number===1;$('slide-next').disabled=number===21;
- $('slide-next').textContent=number===3?'К ПГС →':number===4?'К СГС →':number===14?'К практике →':number===19?'ПГС или СГС? →':number===21?'Урок завершён':'Дальше →';
+ $('slide-prev').disabled=number===1;$('slide-next').disabled=number===24;
+ $('slide-next').textContent=number===3?'К ПГС →':number===4?'К СГС →':number===14?'К практике →':number===19?'ПГС или СГС? →':number===21?'К заданию ОГЭ →':number===23?'К рефлексии →':number===24?'Урок завершён':'Дальше →';
  document.body.dataset.view=activeBlock==='warm'?'warm-'+warmStage:activeBlock==='sgs'?'sgs-'+current:activeBlock==='sgs-practice'?'practice-'+practicePage:activeBlock;
 }
 function moveSlide(direction){
@@ -293,9 +338,14 @@ function moveSlide(direction){
   practicePage+=direction;renderPractice();
  }else if(activeBlock==='mixed'){
   if(direction<0&&mixedPage===0){practicePage=4;renderPractice();switchBlock('sgs-practice');return;}
-  if(direction>0&&mixedPage===1)return;
+  if(direction>0&&mixedPage===1){examPage=0;renderExam();switchBlock('exam');return;}
   mixedPage+=direction;renderMixed();
- }
+ }else if(activeBlock==='exam'){
+  if(direction<0&&examPage===0){mixedPage=1;renderMixed();switchBlock('mixed');return;}
+  if(direction>0&&examPage===1){switchBlock('reflection');return;}
+  examPage+=direction;renderExam();
+ }else if(activeBlock==='reflection'&&direction<0){examPage=1;renderExam();switchBlock('exam');return;}
+
  window.scrollTo({top:0,behavior:'instant'});
 }
 $('slide-prev').onclick=()=>moveSlide(-1);$('slide-next').onclick=()=>moveSlide(1);
@@ -318,6 +368,7 @@ function renderPractice(){
  updateSlideNav();
 }
 function resetAnswers(){
+ hideExamKey();
  for(const v of ['a','b']){ $('variant-'+v).classList.remove('revealed');$('key-'+v).setAttribute('aria-pressed','false');$('key-'+v).textContent='Показать ключ '+(v==='a'?'А':'Б');}
  $('b-note').hidden=true;
  if($('practice-key')){$('practice-key').hidden=true;$('practice-check').setAttribute('aria-expanded','false');$('practice-check').textContent='Проверка';}
@@ -340,7 +391,29 @@ function renderMixed(){
  updateSlideNav();
 }
 
-renderExample();renderWarmStage();renderPractice();renderMixed();updateSlideNav();
+let examPage=0;
+function hideExamKey(){
+ $('exam-key').hidden=true;$('exam').classList.remove('exam-checked');
+ for(const id of ['exam-check','exam-text-check']){$(id).setAttribute('aria-expanded','false');$(id).textContent='Проверка';}
+}
+function renderExam(){
+ hideExamKey();
+ $('exam-text-panel').hidden=examPage!==0;
+ $('exam-options-panel').hidden=examPage!==1;
+ updateSlideNav();
+}
+$('nav-exam').onclick=()=>{examPage=0;renderExam();switchBlock('exam');};
+$('nav-reflection').onclick=()=>switchBlock('reflection');
+$('exam-go-options').onclick=()=>{examPage=1;renderExam();window.scrollTo({top:0,behavior:'instant'});};
+$('exam-back-text').onclick=()=>{examPage=0;renderExam();window.scrollTo({top:0,behavior:'instant'});};
+function toggleExamKey(){
+ const open=$('exam-key').hidden;
+ $('exam-key').hidden=!open;$('exam').classList.toggle('exam-checked',open);
+ for(const id of ['exam-check','exam-text-check']){$(id).setAttribute('aria-expanded',String(open));$(id).textContent=open?'Скрыть проверку':'Проверка';}
+}
+$('exam-check').onclick=$('exam-text-check').onclick=toggleExamKey;
+
+renderExample();renderWarmStage();renderPractice();renderMixed();renderExam();updateSlideNav();
 if(location.hash==='#teacher-dictation'){
  document.body.classList.add('teacher-view');$('teacher-sheet').hidden=false;
  $('teacher-words').innerHTML=dictation.map(word=>'<li>'+word+'</li>').join('');
