@@ -80,11 +80,19 @@ body[data-view^=sgs-] main{border-top:4px solid var(--olive)}body[data-view=sgs-
 @media(min-width:1101px){.practice-layout-3 .practice-title{font-size:45px;margin-bottom:13px}.practice-layout-3 .practice-instruction{font-size:23px;margin-bottom:22px}.practice-layout-3 .practice-list{gap:17px}.practice-layout-3 .practice-text{font-size:26px;line-height:1.25}.practice-layout-3 .practice-basis{font-size:22px;margin-top:7px;padding-top:3px;padding-bottom:3px}.practice-layout-3 .practice-foot{margin-top:22px}.practice-layout-3 .practice-head{padding-top:16px}}
 @media(min-width:1101px) and (max-height:850px){.practice-layout-3 .practice-text{font-size:24px}.practice-layout-3 .practice-basis{font-size:21px}.practice-layout-3 .practice-title{font-size:39px}.practice-layout-3 .practice-instruction{font-size:21px}.practice-layout-3 .practice-list{gap:14px}}
 
+
+/* ПГС или СГС: два экрана по шесть предложений. */
+.mixed-process{font:14px/1.4 Lesson,Arial,sans-serif;color:var(--muted);margin:0 0 25px;max-width:1150px}
+.mixed-list{gap:22px}.mixed-list .practice-text{font-family:'Times New Roman',Times,serif;font-size:30px;font-weight:400;font-style:normal;color:var(--ink);text-decoration:none;line-height:1.3}
+.mixed-layout-0 .mixed-head{border-bottom:1px solid var(--line);margin-bottom:27px}.mixed-layout-1 .mixed-head{border-top:4px solid var(--gold);padding-top:18px}.mixed-layout-1 .mixed-list{border-left:6px solid var(--olive);padding-left:24px}
+.mixed-discussion{margin-top:27px;padding-top:23px;border-top:1px solid var(--line)}.mixed-discussion h2{font-size:30px}
+@media(min-width:1101px) and (max-height:850px){.mixed-list{gap:17px}.mixed-list .practice-text{font-size:27px}.mixed-process{font-size:13px;margin-bottom:20px}.mixed-layout-0 .mixed-head{margin-bottom:22px}.mixed-head .practice-instruction{font-size:22px;margin-bottom:15px}}
+@media(max-width:760px){.mixed-list .practice-text{font-size:25px}.mixed-list{gap:23px}.mixed-process{font-size:13px}.mixed-layout-1 .mixed-list{padding-left:13px;border-left-width:4px}}
 </style>
 </head>
 <body>
 <div class="shell">
-<header><div class="identity">Русский язык <span>8 класс · Работа в паре</span></div><nav aria-label="Блоки урока"><button id="nav-warm" aria-current="page">1. Разминка <span>0–5 минут</span></button><button id="nav-pgs">2. ПГС <span>5–10 минут</span></button><button id="nav-sgs">3. СГС <span>10 примеров</span></button><button id="nav-sgs-practice">4. Практика <span>20 предложений</span></button><button id="nav-oge-summary">5. К ОГЭ <span>Собираем ответ</span></button></nav></header>
+<header><div class="identity">Русский язык <span>8 класс · Работа в паре</span></div><nav aria-label="Блоки урока"><button id="nav-warm" aria-current="page">1. Разминка <span>0–5 минут</span></button><button id="nav-pgs">2. ПГС <span>5–10 минут</span></button><button id="nav-sgs">3. СГС <span>10 примеров</span></button><button id="nav-sgs-practice">4. Практика <span>20 предложений</span></button><button id="nav-mixed">5. ПГС или СГС? <span>6–8 минут</span></button></nav></header>
 <main>
 
 
@@ -109,7 +117,7 @@ body[data-view^=sgs-] main{border-top:4px solid var(--olive)}body[data-view=sgs-
 </div></div><div class="page-foot"><span class="folio">На следующем примере поменяйтесь ролями.</span><button id="to-pgs">← К пятиминутке</button></div>
 </section>
 <section id="sgs-practice" aria-labelledby="practice-title" hidden><div id="practice-content"></div></section>
-<section id="oge-summary" aria-labelledby="summary-title" hidden><div class="summary-wrap"><p class="practice-kicker">От разбора — к формату ОГЭ</p><h1 id="summary-title">Собери ответ</h1><p class="summary-task">Запиши подряд номера верных вариантов из тех, которые ты решил(а).</p><label class="summary-label" for="summary-response">Твой ответ</label><input id="summary-response" class="summary-response" type="text" inputmode="numeric" autocomplete="off"><p class="summary-hint">Сначала запиши самостоятельно. Затем сравните ответы в паре.</p><div class="practice-foot"><button id="summary-check" aria-expanded="false" aria-controls="summary-key">Проверка</button><span class="practice-mode">Последний шаг · задание № 2 ОГЭ</span></div><div id="summary-key" class="practice-key" hidden><h2>Для преподавателя</h2><p>Верные варианты при выполнении всех десяти пунктов: <strong>2, 4, 6, 7, 9, 10</strong>.</p><p>Полная запись по команде упражнения: <strong>2467910</strong>.</p><p class="key-note">Если решена только часть заданий, в ответ входят номера верных вариантов только из этой части. Подборка из десяти пунктов — учебная тренировка, а не точная копия экзаменационного задания.</p></div></div></section></main><footer class="outside-foot"><span>Орфография · ПГС · СГС · Практика к заданию № 2 ОГЭ</span><span>8 класс · Русский язык</span></footer>
+<section id="mixed" aria-labelledby="mixed-title" hidden><div id="mixed-content"></div></section></main><footer class="outside-foot"><span>Орфография · ПГС · СГС · Практика к заданию № 2 ОГЭ</span><span>8 класс · Русский язык</span></footer>
 </div>
 <div class="slide-dock" role="navigation" aria-label="Переключение слайдов"><div class="dock-inner"><button id="slide-prev">← Назад</button><div class="slide-position"><span id="slide-number" aria-live="polite"></span><span id="slide-section"></span></div><button id="slide-next" class="primary">Дальше →</button></div></div>
 <aside id="teacher-sheet" hidden><h1>Слова для диктовки</h1><p>Для учителя. Перед демонстрацией переключитесь на вкладку урока.</p><ol id="teacher-words"></ol><button id="close-teacher">Закрыть список</button></aside>
@@ -145,7 +153,7 @@ let activeBlock='warm';
 function switchBlock(block){
  resetAnswers();
  activeBlock=block;
- for(const name of ['warm','pgs','sgs','sgs-practice','oge-summary']){
+ for(const name of ['warm','pgs','sgs','sgs-practice','mixed']){
   $(name).hidden=name!==block;
   if(name===block)$('nav-'+name).setAttribute('aria-current','page');
   else $('nav-'+name).removeAttribute('aria-current');
@@ -259,12 +267,12 @@ function renderWarmStage(){
 }
 $('teacher-list').onclick=()=>{const teacherURL=new URL(location.href);teacherURL.hash='teacher-dictation';window.open(teacherURL.href,'_blank','noopener');};
 function updateSlideNav(){
- const number=activeBlock==='warm'?warmStage+1:activeBlock==='pgs'?4:activeBlock==='sgs'?5+current:activeBlock==='sgs-practice'?15+practicePage:20;
- $('slide-number').textContent='Слайд '+number+' / 20';
- const titles={warm:'Орфографическая разминка',pgs:'Пятиминутка по ПГС',sgs:'Составное глагольное сказуемое','sgs-practice':practicePage<2?'Практика · Найди СГС':'Практика · Проверь основу','oge-summary':'Переход к ОГЭ'};
+ const number=activeBlock==='warm'?warmStage+1:activeBlock==='pgs'?4:activeBlock==='sgs'?5+current:activeBlock==='sgs-practice'?15+practicePage:20+mixedPage;
+ $('slide-number').textContent='Слайд '+number+' / 21';
+ const titles={warm:'Орфографическая разминка',pgs:'Пятиминутка по ПГС',sgs:'Составное глагольное сказуемое','sgs-practice':practicePage<2?'Практика · Найди СГС':'Практика · Проверь основу','mixed':'ПГС или СГС? · '+(mixedPage===0?'1–6':'7–12')};
  $('slide-section').textContent=titles[activeBlock];
- $('slide-prev').disabled=number===1;$('slide-next').disabled=number===20;
- $('slide-next').textContent=number===3?'К ПГС →':number===4?'К СГС →':number===14?'К практике →':number===19?'Собери ответ →':number===20?'Урок завершён':'Дальше →';
+ $('slide-prev').disabled=number===1;$('slide-next').disabled=number===21;
+ $('slide-next').textContent=number===3?'К ПГС →':number===4?'К СГС →':number===14?'К практике →':number===19?'ПГС или СГС? →':number===21?'Урок завершён':'Дальше →';
  document.body.dataset.view=activeBlock==='warm'?'warm-'+warmStage:activeBlock==='sgs'?'sgs-'+current:activeBlock==='sgs-practice'?'practice-'+practicePage:activeBlock;
 }
 function moveSlide(direction){
@@ -281,9 +289,13 @@ function moveSlide(direction){
   current+=direction;renderExample();
  }else if(activeBlock==='sgs-practice'){
   if(direction<0&&practicePage===0){current=9;renderExample();switchBlock('sgs');return;}
-  if(direction>0&&practicePage===4){switchBlock('oge-summary');return;}
+  if(direction>0&&practicePage===4){mixedPage=0;renderMixed();switchBlock('mixed');return;}
   practicePage+=direction;renderPractice();
- }else if(activeBlock==='oge-summary'&&direction<0){practicePage=4;renderPractice();switchBlock('sgs-practice');return;}
+ }else if(activeBlock==='mixed'){
+  if(direction<0&&mixedPage===0){practicePage=4;renderPractice();switchBlock('sgs-practice');return;}
+  if(direction>0&&mixedPage===1)return;
+  mixedPage+=direction;renderMixed();
+ }
  window.scrollTo({top:0,behavior:'instant'});
 }
 $('slide-prev').onclick=()=>moveSlide(-1);$('slide-next').onclick=()=>moveSlide(1);
@@ -309,17 +321,26 @@ function resetAnswers(){
  for(const v of ['a','b']){ $('variant-'+v).classList.remove('revealed');$('key-'+v).setAttribute('aria-pressed','false');$('key-'+v).textContent='Показать ключ '+(v==='a'?'А':'Б');}
  $('b-note').hidden=true;
  if($('practice-key')){$('practice-key').hidden=true;$('practice-check').setAttribute('aria-expanded','false');$('practice-check').textContent='Проверка';}
- $('summary-key').hidden=true;$('summary-check').setAttribute('aria-expanded','false');$('summary-check').textContent='Проверка';
+ if($('mixed-key')){$('mixed-key').hidden=true;$('mixed-check').setAttribute('aria-expanded','false');$('mixed-check').textContent='Проверка';}
  if($('dictation-answers')){$('dictation-answers').hidden=true;$('dictation-answers').innerHTML='';$('dictation-check').setAttribute('aria-expanded','false');$('dictation-check').textContent='Проверить написание';}
  $('analysis').hidden=true;$('sentence').classList.remove('analyzed');$('show-analysis').setAttribute('aria-expanded','false');$('show-analysis').textContent='Показать разбор';
  $('oge-answer').hidden=true;$('oge').hidden=true;$('oge-check').setAttribute('aria-expanded','false');$('oge-check').textContent='Проверить ответ';$('oge-trigger').setAttribute('aria-expanded','false');
  if(activeBlock==='warm'&&warmStage>0)for(const v of ['a','b'])if($('orth-check-'+v)){ $('orth-check-'+v).setAttribute('aria-pressed','false');$('orth-check-'+v).textContent='Проверить вариант '+(v==='a'?'А':'Б');$('orth-list-'+v).innerHTML=warmList(v,false);$('orth-rule').hidden=true;}
 }
 $('nav-sgs-practice').onclick=()=>{practicePage=0;renderPractice();switchBlock('sgs-practice');};
-$('nav-oge-summary').onclick=()=>switchBlock('oge-summary');
-$('summary-check').onclick=()=>{const open=$('summary-key').hidden;$('summary-key').hidden=!open;$('summary-check').setAttribute('aria-expanded',String(open));$('summary-check').textContent=open?'Скрыть проверку':'Проверка';};
+$('nav-mixed').onclick=()=>{mixedPage=0;renderMixed();switchBlock('mixed');};
 
-renderExample();renderWarmStage();renderPractice();updateSlideNav();
+const mixedData=[{"n": 1, "sentence": "Вечером мы обсудим план поездки.", "key": "обсудим — ПГС"}, {"n": 2, "sentence": "Экскурсовод начал рассказывать о старой крепости.", "key": "начал рассказывать — СГС"}, {"n": 3, "sentence": "После нескольких попыток Дима сумел открыть замок.", "key": "сумел открыть — СГС"}, {"n": 4, "sentence": "Завтра я буду собирать материалы для проекта.", "key": "буду собирать — ПГС"}, {"n": 5, "sentence": "Команда продолжала тренироваться даже под дождём.", "key": "продолжала тренироваться — СГС"}, {"n": 6, "sentence": "Пусть дежурный откроет окно.", "key": "пусть откроет — ПГС"}, {"n": 7, "sentence": "Лиза готова выступить первой.", "key": "готова выступить — СГС"}, {"n": 8, "sentence": "Наша команда одержала победу в финале.", "key": "одержала победу — ПГС"}, {"n": 9, "sentence": "Волонтёры вышли встречать гостей.", "key": "вышли — ПГС"}, {"n": 10, "sentence": "В последний момент я решил всё-таки остаться дома.", "key": "решил остаться — СГС"}, {"n": 11, "sentence": "Редактор попросил автора сократить статью.", "key": "попросил — ПГС"}, {"n": 12, "sentence": "После долгой паузы собеседник снова стал задавать вопросы.", "key": "стал задавать — СГС"}];
+let mixedPage=0;
+function renderMixed(){
+ const rows=mixedData.slice(mixedPage*6,mixedPage*6+6);
+ $('mixed-content').className='mixed-layout-'+mixedPage;
+ $('mixed-content').innerHTML='<div class="mixed-head"><p class="practice-kicker">Работа в паре · 6–8 минут · '+(mixedPage===0?'1–6':'7–12')+'</p><h1 id="mixed-title" class="practice-title">ПГС или СГС?</h1><p class="practice-instruction">Выпиши сказуемое целиком и укажи его вид — ПГС или СГС. Если в предложении есть инфинитив, будь готов объяснить, входит ли он в сказуемое.</p><p class="mixed-process">Сначала каждый выполняет задание самостоятельно. Затем сверьте ответы и объясните спорные случаи.</p></div><ol class="practice-list mixed-list">'+rows.map(x=>'<li class="practice-item mixed-item" data-number="'+x.n+'"><span class="practice-num">'+String(x.n).padStart(2,'0')+'</span><p class="practice-text">'+safe(x.sentence)+'</p></li>').join('')+'</ol><div class="practice-foot"><button id="mixed-check" aria-controls="mixed-key" aria-expanded="false">Проверка</button><span class="practice-mode">Сначала самостоятельно → затем обсуждение в паре</span></div><aside id="mixed-key" class="practice-key" hidden><h2>Ключ для преподавателя · '+(mixedPage===0?'1–6':'7–12')+'</h2>'+rows.map(x=>'<p><strong>'+x.n+'.</strong> '+safe(x.key)+'</p>').join('')+'<div class="mixed-discussion"><h2>Вопросы для обсуждения в паре</h2><p><strong>Первому ученику — № 4 и 12.</strong> Почему «буду собирать» — ПГС, а «стал задавать» — СГС?</p><p class="key-note">Подсказка для преподавателя: «буду собирать» — форма будущего времени глагола «собирать». В «стал задавать» вспомогательный глагол «стал» обозначает начало действия.</p><p><strong>Второму ученику — № 9 и 11.</strong> Почему инфинитивы «встречать» и «сократить» не входят в сказуемое?</p><p class="key-note">Подсказка для преподавателя: «встречать» отвечает на вопрос «вышли зачем?» и обозначает цель. В № 11 попросил редактор, а сокращать статью будет автор.</p></div></aside>';
+ $('mixed-check').onclick=()=>{const open=$('mixed-key').hidden;$('mixed-key').hidden=!open;$('mixed-check').setAttribute('aria-expanded',String(open));$('mixed-check').textContent=open?'Скрыть проверку':'Проверка';};
+ updateSlideNav();
+}
+
+renderExample();renderWarmStage();renderPractice();renderMixed();updateSlideNav();
 if(location.hash==='#teacher-dictation'){
  document.body.classList.add('teacher-view');$('teacher-sheet').hidden=false;
  $('teacher-words').innerHTML=dictation.map(word=>'<li>'+word+'</li>').join('');
