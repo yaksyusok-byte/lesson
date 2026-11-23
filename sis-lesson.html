@@ -98,7 +98,27 @@
     li { padding-left: .15cqw; }
     li::marker { color: var(--wine); font-variant-numeric: tabular-nums; }
 
-    .intro { gap: .75cqw; }
+    .intro { position: relative; gap: .75cqw; }
+
+    .download-lesson {
+      position: absolute;
+      inset-inline-start: 50%;
+      bottom: clamp(.18rem, .6cqw, .6rem);
+      transform: translateX(-50%);
+      display: grid;
+      place-items: center;
+      min-height: clamp(1.4rem, 2.55cqw, 2.65rem);
+      padding: .18rem clamp(.55rem, 1.1cqw, 1.15rem);
+      border: 1px solid #bd9575;
+      background: #4b2826;
+      color: #fff1d8;
+      font-size: clamp(.69rem, 1.24cqw, 1rem);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .download-lesson:hover { background: #632b2e; }
+    .download-lesson:focus-visible { outline: 2px solid #fff1d8; outline-offset: 2px; }
     .intro h1 { font-size: 4.45cqw; }
 
     .rule {
@@ -612,7 +632,7 @@
       :root { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
       body { display: block; min-height: 0; }
       .presentation { width: 100%; }
-      .controls { display: none; }
+      .controls, .download-lesson { display: none; }
     }
   </style>
 </head>
@@ -654,6 +674,7 @@
           <p>Любая часть речи.</p>
         </section>
       </div>
+      <a class="download-lesson" href="sis-lesson.html" download="sis-lesson.html">Скачать HTML</a>
     </section>
     <section class="lesson exercises" id="slide-2" aria-labelledby="exercise-title" hidden>
       <h1 id="exercise-title">Найдите составное именное сказуемое</h1>
